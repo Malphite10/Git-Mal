@@ -1,4 +1,37 @@
+# dependencies
+node_modules/
+
+# next.js
+.next/
+out/
+next-env.d.ts
+
+# env (never commit secrets — set via Netlify UI/CLI with Scopes+Contexts)
 .env
-.env.local
-.env.production.local
-.env.test.local
+.env*.local
+.env.production
+
+# netlify
+.netlify/
+
+# test coverage
+coverage/
+.nyc_output/
+
+# vitest
+vitest.config.ts.timestamp-*.md
+
+# misc
+*.log
+.DS_Store
+*.tsbuildinfo
+
+# prisma
+prisma/migrations/.migration_lock.toml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+NETLIFY_ENV.md
