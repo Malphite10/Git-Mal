@@ -1,0 +1,58 @@
+# STANDALONE WATCHDOG SYSTEMD SERVICE
+# Install: sudo cp watchdog/watchdog.service /etc/systemd/system/
+# Enable: sudo systemctl enable watchdog
+# Start: sudo systemctl start watchdog
+# Logs: journalctl -u watchdog -f
+
+[Unit]
+Description=MAL-MEDIA Security Watchdog
+Documentation=https://github.com/malphite10/classes-subscriptions
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/opt/watchdog/index.js
+
+[Service]
+Type=simple
+User=watchdog
+Group=watchdog
+WorkingDirectory=/opt/watchdog
+ExecStart=/usr/bin/node /opt/watchdog/index.js
+Restart=always
+RestartSec=10
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+Environment=NODE_ENV=production
+Environment=WATCHDOG_TARGET_URL=http://localhost:3000
+Environment=WATCHDOG_API_URL=http://localhost:3000/api/health
+Environment=WATCHDOG_DB_URL=http://localhost:3000/api/health/db
+Environment=WATCHDOG_LOG_LEVEL=info
+Environment=WATCHDOG_LOG_FILE=/var/log/watchdog.log
+Environment=WATCHDOG_SYSLOG=true
+Environment=WATCHDOG_HMAC_SECRET=CHANGE_ME_IN_PRODUCTION
+Environment=WATCHDOG_ALERT_WEBHOOK=https://alerts.yourdomain.com/webhook
+Environment=WATCHDOG_RESTART_CMD=systemctl restart mal-media-app
+Environment=WATCHDOG_MAX_RESTARTS=3
+Environment=WATCHDOG_RESTART_COOLDOWN=300000
+Environment=WATCHDOG_ALLOWED_IPS=127.0.0.1,::1
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/log
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictNamespaces=true
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=watchdog
+
+[Install]
+WantedBy=multi-user.target
